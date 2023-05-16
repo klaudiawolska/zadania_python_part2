@@ -31,6 +31,7 @@ while True:
     elif wybor_menu == "0":
         operacje.zapisz_zadania()
         print("Dziękujemy za skorzystanie z programu TO-DO LIST")
+        break
     else:
         print("Nie ma takiej opcji w menu, wybierz spośród 0-5")
 

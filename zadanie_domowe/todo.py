@@ -4,17 +4,31 @@ from os import path
 
 #klasa zadanie i atrybuty obiektu zadanie
 class Zadanie:
-    id: int = -1
 
-    def __init__(self, tytul: str, opis: str, deadline: int):
-        self.__id = Zadanie.id
-        self.__tytul = tytul
-        self.__opis = opis
-        self.__deadline = deadline
+    id: int = 0
+
+    def __init__(self, id, tytul: str, opis: str, deadline: str):
+        Zadanie.id += 1
+        self.id = Zadanie.id
+        self.tytul = tytul
+        self.opis = opis
+        self.deadline = deadline
     def __str__(self):
-        return f"Zadanie ID: {self.Zadanie.id}\nTytul: {self.title}\nDeadline: {self.deadline}"
+        return f"Zadanie ID: {self.id}\nTytul: {self.tytul}\nDeadline: {self.deadline}"
     def pobierz_opis(self) -> str:
-        return self.__opis
+        return self.opis
+
+#
+class ZadanieEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Zadanie):
+            return {
+                'id': obj.id,
+                'tytul': obj.tytul,
+                'opis': obj.opis,
+                'deadline': obj.deadline
+            }
+        return super().default(obj)
 
 #klasa z operacjami wykonywanymi na zadaniach
 class Operacje:
@@ -32,8 +46,12 @@ class Operacje:
                 exit()
             with open(data_path, "r", encoding="utf-8") as plik:
                 dane = json.load(plik)
-                self.zadania = dane['zadania']
-                print(f"Wczytano zadania TO-DO z pliku {filename}")
+                zadania_json = dane.get('zadania', [])  #pobranie listy zadań z pliku json
+                self.zadania = [Zadanie(**zadanie) for zadanie in zadania_json]  
+                print(f"Wczytano zadania TO-DO z pliku {filename}: ")
+                for zadanie in zadania_json: #pętla to odczytania zadań z pliku i wyświetlenia na konsoli
+                    zadanie_z_pliku = Zadanie(**zadanie) #tworzenie obiektu zadanie dla kadego elementu
+                    print(zadanie_z_pliku)
         except FileNotFoundError:
             print(f"Plik o nazwie: {filename} nie istnieje")
         except json.JSONDecodeError:
@@ -46,18 +64,17 @@ class Operacje:
             dir_path = path.dirname(__file__)
             filename = "plik.json"
             data_path = path.join(dir_path, filename)
-            if not path.exists(data_path):
+            if not path.isfile(data_path):
                 exit()
-            with open(data_path, "r", encoding="utf-8") as plik_zapis:
-                plik_zapis.write(dane)
+            with open(data_path, "w", encoding="utf-8") as plik_zapis:
+                json.dump(dane, plik_zapis, cls=ZadanieEncoder, ensure_ascii=False, indent=4)
             print(f"Zadanie poprawnie zapisane w pliku {filename}")
         except Exception as e:
-            print("Zadania niepoprawnie zapisane")
+            print(f"Zadania niepoprawnie zapisane z powodu błędu: {e}")
     
     #metoda do dodawania zadań
     def dodaj_zadanie(self):
         print("Wprowadź informacje o zadaniu, które chcesz dodać")
-        Zadanie.id =+ 1
         tytul = input("Tytuł: ")
         opis = input("Opis: ")
         deadline = input("Deadline: ")
@@ -68,15 +85,16 @@ class Operacje:
     
     #metoda do usuwania zadań
     def usun_zadanie(self):
-        zadanie_id = input("Podaj ID zadania do usunięcia: ")
+        zadanie_id = int(input("Podaj ID zadania do usunięcia: "))
         wyszukane_zadanie = None
         for zadanie in self.zadania:
-            if zadanie.Zadanie.id == zadanie_id:
+            if Zadanie.id == zadanie_id:
                 wyszukane_zadanie = zadanie
                 break
         if wyszukane_zadanie:
-            self.zadania.remove(wyszukane_zadanie)
+            self.zadania.remove(wyszukane_zadanie) #usunięcie wybranego zadania
             print("Zadanie zostało usunięte")
+            self.zapisz_zadania() #zapisanie zmienionej listy zadań
         else:
             print("Nie znaleziono zadania o podanym ID")
 
@@ -119,8 +137,8 @@ class Operacje:
         print("Aktualne zadania na liście: ")
         self.lista_zadan()
         wybor_zapisu = input("Czy chcesz zapisać aktualne zadania do pliku? (t/n)")
-        if wybor.lower() == "t":
-            self.zapisz_zadania(filename)
+        if wybor_zapisu.lower() == "t":
+            self.zapisz_zadania()
         else:
             print("Zadania nie zostały zapisane do pliku .json")
 
