@@ -18,7 +18,7 @@ class Zadanie:
     def pobierz_opis(self) -> str:
         return self.opis
 
-#
+#encoder do wyświetlania danych z pliku o fromacie json 
 class ZadanieEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Zadanie):
@@ -37,7 +37,7 @@ class Operacje:
         self.wyswietl_zadania()
     
     #metoda do wyswietlania zadań z pliku json
-    def wyswietl_zadania(self):
+    def wyswietl_zadania(self) -> None:
         try:
             dir_path = path.dirname(__file__)
             filename = "plik.json"
@@ -58,7 +58,7 @@ class Operacje:
             print("Błąd dekodowania pliku JSON")
     
     #metoda do zapisu zadań
-    def zapisz_zadania(self):
+    def zapisz_zadania(self) -> None:
         dane = {'zadania':self.zadania}
         try:
             dir_path = path.dirname(__file__)
@@ -73,7 +73,7 @@ class Operacje:
             print(f"Zadania niepoprawnie zapisane z powodu błędu: {e}")
     
     #metoda do dodawania zadań
-    def dodaj_zadanie(self):
+    def dodaj_zadanie(self) -> object:
         print("Wprowadź informacje o zadaniu, które chcesz dodać")
         tytul = input("Tytuł: ")
         opis = input("Opis: ")
@@ -84,7 +84,7 @@ class Operacje:
         print("Dodano nowe zadanie")
     
     #metoda do usuwania zadań
-    def usun_zadanie(self):
+    def usun_zadanie(self) -> None:
         zadanie_id = int(input("Podaj ID zadania do usunięcia: "))
         wyszukane_zadanie = None
         for zadanie in self.zadania:
@@ -99,7 +99,7 @@ class Operacje:
             print("Nie znaleziono zadania o podanym ID")
 
     #metoda do aktualizacji zadań
-    def aktualizuj_zadanie(self):
+    def aktualizuj_zadanie(self) -> None:
         zadanie_id = input("Podaj ID zadania do usunięcia: ")
         wyszukane_zadanie = None
         for zadanie in self.zadania:
@@ -121,7 +121,7 @@ class Operacje:
             print("Nie znaleziono zadania o podanym ID")
 
     #metoda wyświetlająca listę zadań TO-DO
-    def lista_zadan(self):
+    def lista_zadan(self) -> None:
         if self.zadania:
             for zadanie in self.zadania:
                 print(zadanie)
@@ -132,7 +132,7 @@ class Operacje:
             print("Brak zadań na liście")
     
     #metoda do zapisu zadań ręcznie przez uzytkownika
-    def zapis_reczny(self):
+    def zapis_reczny(self) -> None:
         print("Ręczne zapisanie zadań do pliku .json")
         print("Aktualne zadania na liście: ")
         self.lista_zadan()
