@@ -1,14 +1,7 @@
-def dodawanie(a,b):
-    return a + b
-
-def odejmowanie(a,b):
-    return a - b
-
-def mnozenie(a,b):
-    return a*b
-
-def dzielenie(a,b):
-    return a / b
+from mod1 import dodawanie
+from mod1 import odejmowanie
+from mod1 import mnozenie
+from mod1 import dzielenie
 
 while True:
     print("Wybierz operację kalkulatora: 1 - dodawanie, 2 - odejmowanie, 3 - mnozenie, 4 - dzielenie, 0 - koniec")
